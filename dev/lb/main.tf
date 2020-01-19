@@ -1,5 +1,5 @@
 resource "aws_lb" "public_lb" {
-  name                             = "${var.namespace}-public-lb-${var.environment}"
+  name                             = "public-lb-${var.environment}"
   internal                         = false
   load_balancer_type               = "application"
   subnets                          = var.public_subnets
@@ -7,6 +7,6 @@ resource "aws_lb" "public_lb" {
   enable_deletion_protection       = false
   enable_cross_zone_load_balancing = true
   tags = {
-    Name = "${var.namespace}-public_lb-${var.environment}"
+    Name = "public_lb-${var.environment}"
   }
 }

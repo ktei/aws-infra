@@ -1,6 +1,6 @@
 # Control access to public LB via HTTP/HTTPS
-resource "aws_security_group" "public_lb_sg" {
-  name        = "${var.namespace}-public_lb_sg-${var.environment}"
+resource "aws_security_group" "public_lb_http" {
+  name        = "public-lb-http-${var.environment}"
   description = "Control access to public LB via HTTP/HTTPS"
   vpc_id      = var.vpc_id
   ingress {
@@ -22,6 +22,6 @@ resource "aws_security_group" "public_lb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "${var.namespace}-public_lb_sg-${var.environment}"
+    Name = "public-lb-http-${var.environment}"
   }
 }
