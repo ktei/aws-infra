@@ -1,6 +1,10 @@
+locals {
+  public_lb_http_name = "${var.environment}-public-lb-http"
+}
+
 # Control access to public LB via HTTP/HTTPS
 resource "aws_security_group" "public_lb_http" {
-  name        = "public-lb-http-${var.environment}"
+  name        = local.public_lb_http_name
   description = "Control access to public LB via HTTP/HTTPS"
   vpc_id      = var.vpc_id
   ingress {
@@ -22,6 +26,6 @@ resource "aws_security_group" "public_lb_http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "public-lb-http-${var.environment}"
+    Name = local.public_lb_http_name
   }
 }

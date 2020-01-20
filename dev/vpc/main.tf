@@ -1,7 +1,12 @@
+locals {
+  vpc_name = "${var.environment}-vpc"
+}
+
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = var.environment
+  name = local.vpc_name
   cidr = "10.0.0.0/16"
 
   azs             = ["ap-southeast-2a", "ap-southeast-2b"]
