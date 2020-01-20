@@ -74,87 +74,143 @@ resource "aws_iam_role_policy_attachment" "codebuild_build_artifacts_access" {
   policy_arn = aws_iam_policy.build_artifacts_policy.arn
 }
 
-# data "aws_iam_policy_document" "codepipeline_assume_role" {
-#   statement {
-#     sid = ""
+data "aws_iam_policy_document" "codepipeline_assume_role" {
+  statement {
+    sid = ""
 
-#     actions = [
-#       "sts:AssumeRole"
-#     ]
+    actions = [
+      "sts:AssumeRole"
+    ]
 
-#     principals {
-#       type        = "Service"
-#       identifiers = ["codepipeline.amazonaws.com"]
-#     }
+    principals {
+      type        = "Service"
+      identifiers = ["codepipeline.amazonaws.com"]
+    }
 
-#     effect = "Allow"
-#   }
-# }
+    effect = "Allow"
+  }
+}
 
-# resource "aws_iam_role" "codepipeline" {
-#   name               = "${local.prefix}-codepipeline"
-#   assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role.json
-# }
+# create codepipeline role
+resource "aws_iam_role" "codepipeline" {
+  name               = "${local.prefix}-codepipeline"
+  assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role.json
+}
 
-# resource "aws_iam_role_policy_attachment" "codepipeline" {
-#   role       = aws_iam_role.codepipeline.id
-#   policy_arn = aws_iam_policy.codepipeline.arn
-# }
+# create codepipeline
+data "aws_ssm_parameter" "github_token" {
+  name = "codepipeline-github-token"
+}
 
-# data "aws_iam_policy_document" "codepipeline" {
-#   statement {
-#     sid = ""
+resource "aws_codepipeline" "codepipeline" {
+  name     = "${local.prefix}-codepipeline"
+  role_arn = aws_iam_role.codepipeline.arn
 
-#     actions = [
-#       "elasticbeanstalk:*",
-#       "ec2:*",
-#       "elasticloadbalancing:*",
-#       "autoscaling:*",
-#       "cloudwatch:*",
-#       "s3:*",
-#       "sns:*",
-#       "cloudformation:*",
-#       "rds:*",
-#       "sqs:*",
-#       "ecs:*",
-#       "iam:PassRole",
-#       "logs:PutRetentionPolicy",
-#     ]
+  artifact_store {
+    location = aws_s3_bucket.build_artifacts.bucket
+    type     = "S3"
+  }
 
-#     resources = ["*"]
-#     effect    = "Allow"
-#   }
-# }
+  stage {
+    name = "Source"
 
-# resource "aws_iam_policy" "codepipeline" {
-#   name   = "${local.prefix}-codepipeline-policy"
-#   policy = data.aws_iam_policy_document.codepipeline.json
-# }
+    action {
+      name             = "Source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = "1"
+      output_artifacts = ["code"]
 
-# resource "aws_iam_role_policy_attachment" "build_artifacts_access" {
-#   role       = aws_iam_role.codepipeline.id
-#   policy_arn = aws_iam_policy.build_artifacts_policy.arn
-# }
+      configuration = {
+        OAuthToken           = data.aws_ssm_parameter.github_token.value
+        Owner                = "pingai-github"
+        Repo                 = var.repo
+        Branch               = var.branch
+        PollForSourceChanges = true
+      }
+    }
+  }
 
-# data "aws_iam_policy_document" "codebuild_access_policy" {
-#   statement {
-#     sid = ""
+  stage {
+    name = "Build"
 
-#     actions = [
-#       "codebuild:*"
-#     ]
+    action {
+      name     = "Build"
+      category = "Build"
+      owner    = "AWS"
+      provider = "CodeBuild"
+      version  = "1"
 
-#     resources = [module.codebuild.project_id]
-#     effect    = "Allow"
-#   }
-# }
+      input_artifacts  = ["code"]
+      output_artifacts = ["package"]
 
-# resource "aws_iam_policy" "codebuild_access_policy" {
-#   name   = "${local.prefix}-codebuild-access-policy"
-#   policy = data.aws_iam_policy_document.codebuild_access_policy.json
-# }
+      configuration = {
+        ProjectName = module.codebuild.project_name
+      }
+    }
+  }
+}
 
-# resource "aws_iam_role_policy_attachment" "codebuild_access" {
-#   role       = aws_iam_role.codepipeline.id
-#   policy_arn = aws_iam_policy.codebuild_access_policy.arn
-# }
+data "aws_iam_policy_document" "codepipeline" {
+  statement {
+    sid = ""
+
+    actions = [
+      "elasticbeanstalk:*",
+      "ec2:*",
+      "elasticloadbalancing:*",
+      "autoscaling:*",
+      "cloudwatch:*",
+      # "s3:*",
+      "sns:*",
+      "cloudformation:*",
+      "rds:*",
+      "sqs:*",
+      "ecs:*",
+      "iam:PassRole",
+      "logs:PutRetentionPolicy",
+    ]
+
+    resources = ["*"]
+    effect    = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "codepipeline_policy" {
+  name   = "${local.prefix}-codepipeline-policy"
+  policy = data.aws_iam_policy_document.codepipeline.json
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
+  role       = aws_iam_role.codepipeline.id
+  policy_arn = aws_iam_policy.codepipeline_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_build_artifacts_access" {
+  role       = aws_iam_role.codepipeline.id
+  policy_arn = aws_iam_policy.build_artifacts_policy.arn
+}
+
+data "aws_iam_policy_document" "codebuild_access_policy" {
+  statement {
+    sid = ""
+
+    actions = [
+      "codebuild:*"
+    ]
+
+    resources = [module.codebuild.project_id]
+    effect    = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "codebuild_access_policy" {
+  name   = "${local.prefix}-codebuild-access-policy"
+  policy = data.aws_iam_policy_document.codebuild_access_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_codebuild_access" {
+  role       = aws_iam_role.codepipeline.id
+  policy_arn = aws_iam_policy.codebuild_access_policy.arn
+}
