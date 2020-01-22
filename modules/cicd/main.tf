@@ -53,7 +53,7 @@ resource "aws_iam_policy" "build_artifacts_policy" {
 
 # create ecr repo
 resource "aws_ecr_repository" "images_repo" {
-  name = "${local.prefix}-images"
+  name = "${local.prefix}"
 }
 
 # create codebuild
@@ -66,6 +66,12 @@ module "codebuild" {
   build_compute_type = "BUILD_GENERAL1_LARGE"
   image_repo_name    = aws_ecr_repository.images_repo.name
   privileged_mode    = true
+  environment_variables = [
+    {
+      name  = "ENV",
+      value = var.environment
+    }
+  ]
 }
 
 # attach artifacts bucket access policy to codebuild
