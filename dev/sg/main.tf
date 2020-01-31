@@ -1,6 +1,7 @@
 locals {
-  public_lb_http_name = "${var.environment}-public-lb-http"
-  ecs_sg_name         = "${var.environment}-ecs-sg"
+  public_lb_http_name    = "${var.environment}-public-lb-http"
+  ecs_sg_name            = "${var.environment}-ecs-sg"
+  application_db_sg_name = "${var.environment}-application-db-sg"
 }
 
 # Control access to public LB via HTTP/HTTPS
@@ -61,5 +62,46 @@ resource "aws_security_group" "ecs_sg" {
   }
   tags = {
     Name = local.ecs_sg_name
+  }
+}
+
+resource "aws_security_group" "application_db_sg" {
+  depends_on  = [aws_security_group.ecs_sg]
+  name        = local.application_db_sg_name
+  description = "Allow inbound access from the ECS"
+  vpc_id      = var.vpc_id
+  ingress {
+    protocol        = "tcp"
+    from_port       = 5432
+    to_port         = 5432
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+
+  # This is JUST for testing
+  # TODO: remove this
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # IP for Ping
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["101.164.133.234/32"]
+  }
+
+  egress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = local.application_db_sg_name
   }
 }

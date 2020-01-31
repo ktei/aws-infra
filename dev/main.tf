@@ -37,3 +37,11 @@ module "ecs" {
   source      = "./ecs"
   environment = "dev"
 }
+
+module "db" {
+  source      = "./db"
+  environment = "dev"
+  vpc_id      = module.vpc.vpc_id
+  subnets     = module.vpc.public_subnets
+  vpc_sg_ids  = [module.sg.application_db_sg_id]
+}
