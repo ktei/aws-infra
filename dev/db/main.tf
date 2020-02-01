@@ -25,7 +25,7 @@ resource "aws_db_instance" "application_db" {
   storage_type              = "standard"
   engine                    = "postgres"
   engine_version            = "11.5"
-  instance_class            = "db.t3.micro"
+  instance_class            = "db.t2.micro"
   identifier                = local.application_db_identifier
   name                      = local.application_db_name
   final_snapshot_identifier = "${local.application_db_identifier}-final-snapshot"

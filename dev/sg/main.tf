@@ -94,6 +94,22 @@ resource "aws_security_group" "application_db_sg" {
     cidr_blocks = ["101.164.133.234/32"]
   }
 
+  # IP for Robert
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["124.168.74.154/32"]
+  }
+
+  # IP for Rui
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["119.18.0.179/32"]
+  }
+
   egress {
     protocol    = "tcp"
     from_port   = 5432
