@@ -17,3 +17,11 @@ output "ecs_sg_id" {
 output "public_lb_listener_arn" {
   value = module.lb.public_lb_listener_arn
 }
+
+output "application_db_endpoint" {
+  value = module.db.application_db_endpoint
+}
+
+output "application_cache_endpoint" {
+  value = module.cache.application_cache_endpoint
+}
