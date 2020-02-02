@@ -1,5 +1,5 @@
 locals {
-  application_cache_name       = "${var.environment}_application"
+  application_cache_name       = "${var.environment}-application"
 }
 
 resource "aws_elasticache_subnet_group" "application_cache" {
