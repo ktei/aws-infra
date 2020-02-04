@@ -111,6 +111,14 @@ resource "aws_security_group" "application_db_sg" {
     cidr_blocks = ["119.18.0.179/32"]
   }
 
+  # IP for Steve
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["120.152.112.144/32"]
+  }
+
   egress {
     protocol    = "tcp"
     from_port   = 5432
@@ -130,8 +138,8 @@ resource "aws_security_group" "application_cache_sg" {
   vpc_id      = var.vpc_id
   ingress {
     protocol        = "tcp"
-    from_port       = 5432
-    to_port         = 5432
+    from_port       = 6379
+    to_port         = 6379
     security_groups = [aws_security_group.ecs_sg.id]
   }
 
@@ -139,39 +147,47 @@ resource "aws_security_group" "application_cache_sg" {
   # TODO: remove this
   ingress {
     protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 6379
+    to_port     = 6379
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   # IP for Ping
   ingress {
     protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 6379
+    to_port     = 6379
     cidr_blocks = ["101.164.133.234/32"]
   }
 
   # IP for Robert
   ingress {
     protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 6379
+    to_port     = 6379
     cidr_blocks = ["124.168.74.154/32"]
   }
 
   # IP for Rui
   ingress {
     protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 6379
+    to_port     = 6379
     cidr_blocks = ["119.18.0.179/32"]
+  }
+
+  # IP for Steve
+  ingress {
+    protocol    = "tcp"
+    from_port   = 6379
+    to_port     = 6379
+    cidr_blocks = ["120.152.112.144/32"]
   }
 
   egress {
     protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = 6379
+    to_port     = 6379
     cidr_blocks = ["0.0.0.0/0"]
   }
 
