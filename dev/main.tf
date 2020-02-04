@@ -53,3 +53,10 @@ module "cache" {
   subnets     = module.vpc.public_subnets
   vpc_sg_ids  = [module.sg.application_cache_sg_id]
 }
+
+module "efs" {
+  source          = "./efs"
+  environment     = "dev"
+  subnets         = module.vpc.public_subnets
+  security_groups = [module.sg.ecs_sg_id]
+}

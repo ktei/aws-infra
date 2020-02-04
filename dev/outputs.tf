@@ -25,3 +25,7 @@ output "application_db_endpoint" {
 output "application_cache_endpoint" {
   value = module.cache.application_cache_endpoint
 }
+
+output "application_efs_id" {
+  value = module.efs.application_efs_id
+}
