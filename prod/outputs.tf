@@ -14,8 +14,13 @@ output "ecs_sg_id" {
   value = module.sg.ecs_sg_id
 }
 
+# TODO: remove http listener soon
 output "public_lb_listener_arn" {
   value = module.lb.public_lb_listener_arn
+}
+
+output "public_lb_listener_https_arn" {
+  value = module.lb.public_lb_listener_https_arn
 }
 
 output "application_db_endpoint" {
