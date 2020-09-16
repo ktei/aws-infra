@@ -1,5 +1,4 @@
 locals {
-  port           = 80
   public_lb_name = "${var.environment}-public-lb"
 }
 
@@ -23,11 +22,11 @@ resource "aws_lb_target_group" "public_lb_tg" {
   name        = "${local.public_lb_name}-tg"
   target_type = "ip"
   protocol    = "HTTP"
-  port        = local.port
+  port        = 80
   vpc_id      = var.vpc_id
   health_check {
     path = "/"
-    port = local.port
+    port = 80
   }
   tags = {
     Environment = var.environment
@@ -39,7 +38,7 @@ resource "aws_lb_target_group" "public_lb_tg" {
 resource "aws_lb_listener" "public_lb_listener" {
   depends_on        = [aws_lb_target_group.public_lb_tg]
   load_balancer_arn = aws_lb.public_lb.arn
-  port              = "${local.port}"
+  port              = 80
   protocol          = "HTTP"
   default_action {
     target_group_arn = aws_lb_target_group.public_lb_tg.arn

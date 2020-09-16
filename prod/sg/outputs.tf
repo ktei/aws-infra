@@ -13,3 +13,7 @@ output "application_db_sg_id" {
 output "application_cache_sg_id" {
   value = aws_security_group.application_cache_sg.id
 }
+
+output "bastioin_sg_id" {
+  value = aws_security_group.bastion_sg.id
+}
