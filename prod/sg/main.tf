@@ -45,6 +45,14 @@ resource "aws_security_group" "ecs_sg" {
     security_groups = [aws_security_group.public_lb_http.id]
   }
 
+  # allow peer EC2 access
+  ingress {
+    protocol  = "tcp"
+    from_port = 443
+    to_port   = 443
+    self      = true
+  }
+
   # allow outgoing traffic to whatever
   # TODO: apparently this egress is not secure enough
   egress {
@@ -61,15 +69,15 @@ resource "aws_security_group" "ecs_sg" {
 }
 
 resource "aws_security_group" "bastion_sg" {
-  name = local.bastion_sg_name
+  name        = local.bastion_sg_name
   description = "Allow access outside the VPC to bastion host"
   vpc_id      = var.vpc_id
   # allow incoming SSH traffic from outside
   ingress {
-    protocol        = "tcp"
-    from_port       = 22
-    to_port         = 22
-    cidr_blocks     = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # TODO: not secure enough
@@ -93,7 +101,7 @@ resource "aws_security_group" "application_db_sg" {
     from_port       = 5432
     to_port         = 5432
     security_groups = [aws_security_group.ecs_sg.id]
-    description = "allow incoming traffic from ECS"
+    description     = "allow incoming traffic from ECS"
   }
   egress {
     protocol        = "tcp"
@@ -103,7 +111,7 @@ resource "aws_security_group" "application_db_sg" {
     description     = "allow outgoing traffic to ECS"
   }
   # -- /ECS --
-  
+
   # -- bastion --
   ingress {
     protocol        = "tcp"

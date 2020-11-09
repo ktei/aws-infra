@@ -24,7 +24,7 @@ resource "aws_db_instance" "application_db" {
   allocated_storage         = 20
   storage_type              = "standard"
   engine                    = "postgres"
-  engine_version            = "11.5"
+  engine_version            = "11.8"
   instance_class            = "db.t2.micro"
   identifier                = local.application_db_identifier
   name                      = local.application_db_name
