@@ -21,22 +21,24 @@ resource "aws_db_subnet_group" "application_db" {
 }
 
 resource "aws_db_instance" "application_db" {
-  allocated_storage         = 20
-  storage_type              = "standard"
-  engine                    = "postgres"
-  engine_version            = "11.5"
-  instance_class            = "db.t2.micro"
-  identifier                = local.application_db_identifier
-  name                      = local.application_db_name
-  final_snapshot_identifier = "${local.application_db_identifier}-final-snapshot"
-  username                  = data.aws_ssm_parameter.master_username.value
-  password                  = data.aws_ssm_parameter.master_password.value
-  port                      = 5432
-  multi_az                  = false
-  db_subnet_group_name      = aws_db_subnet_group.application_db.name
-  vpc_security_group_ids    = var.vpc_sg_ids
-  publicly_accessible       = true
-  skip_final_snapshot       = true
+  allocated_storage           = 20
+  storage_type                = "standard"
+  engine                      = "postgres"
+  engine_version              = "13"
+  apply_immediately           = true
+  allow_major_version_upgrade = true
+  instance_class              = "db.t4g.micro"
+  identifier                  = local.application_db_identifier
+  name                        = local.application_db_name
+  final_snapshot_identifier   = "${local.application_db_identifier}-final-snapshot"
+  username                    = data.aws_ssm_parameter.master_username.value
+  password                    = data.aws_ssm_parameter.master_password.value
+  port                        = 5432
+  multi_az                    = false
+  db_subnet_group_name        = aws_db_subnet_group.application_db.name
+  vpc_security_group_ids      = var.vpc_sg_ids
+  publicly_accessible         = true
+  skip_final_snapshot         = true
   # parameter_group_name = "default.mysql5.7"
   tags = {
     Environment = var.environment

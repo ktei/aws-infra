@@ -37,11 +37,11 @@ resource "aws_db_instance" "application_db" {
   vpc_security_group_ids    = var.vpc_sg_ids
   publicly_accessible       = false
   skip_final_snapshot       = false
-  backup_retention_period   = 5 # backup daily, but oldest backup will be 5 days ago. auto delete anything older than that
-  backup_window             = "15:30-16:30" # UTC, so Sydney time is: 1:30 AM - 2: 30 AM (for +10 offset)
+  backup_retention_period   = 5                     # backup daily, but oldest backup will be 5 days ago. auto delete anything older than that
+  backup_window             = "15:30-16:30"         # UTC, so Sydney time is: 1:30 AM - 2: 30 AM (for +10 offset)
   maintenance_window        = "Sat:14:00-Sat:15:00" # This is UTC, so Sydney time is Sun 00:00 AM - Sun 1:00 AM (for +10 offset)
   # parameter_group_name = "default.mysql5.7"
-  deletion_protection       = true
+  deletion_protection = true
   tags = {
     Environment = var.environment
     Name        = local.application_db_name
