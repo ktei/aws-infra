@@ -83,39 +83,23 @@ resource "aws_security_group" "application_db_sg" {
     from_port   = 5432
     to_port     = 5432
     cidr_blocks = ["0.0.0.0/0"]
-    description = "This is JUST for testing TODO: remove this"
+    description = "Convenient access for local development; never do this in production"
   }
 
   ingress {
     protocol    = "tcp"
     from_port   = 5432
     to_port     = 5432
-    cidr_blocks = ["101.164.133.234/32"]
-    description = "IP for Ping"
+    cidr_blocks = ["10.0.99.0/24"]
+    description = "Allow access from private subnet 1"
   }
 
   ingress {
     protocol    = "tcp"
     from_port   = 5432
     to_port     = 5432
-    cidr_blocks = ["124.168.74.154/32"]
-    description = "IP for Robert"
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
-    cidr_blocks = ["119.18.0.179/32"]
-    description = "IP for Rui"
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 5432
-    to_port     = 5432
-    cidr_blocks = ["120.152.112.144/32"]
-    description = "IP for Steve"
+    cidr_blocks = ["10.0.100.0/24"]
+    description = "Allow access from private subnet 2"
   }
 
   egress {
@@ -147,6 +131,22 @@ resource "aws_security_group" "application_cache_sg" {
     from_port   = 6379
     to_port     = 6379
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 6379
+    to_port     = 6379
+    cidr_blocks = ["10.0.99.0/24"]
+    description = "Allow access from private subnet 1"
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 6379
+    to_port     = 6379
+    cidr_blocks = ["10.0.100.0/24"]
+    description = "Allow access from private subnet 2"
   }
 
   tags = {
